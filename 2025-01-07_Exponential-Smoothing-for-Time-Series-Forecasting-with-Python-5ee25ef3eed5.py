@@ -134,7 +134,7 @@ def main():
     mean_mae, _, _ = rolling_origin_ets(y, cfg)
     logger.info(f"ETS mean MAE: {mean_mae}")
 
-    # Tufte-style figure focused on 2024 history and Jan–Aug 2025 forecast vs actuals
+    # Tufte-style figure focused on 2024 history and Jan-Aug 2025 forecast vs actuals
     start_2024 = pd.Period('2024-01', freq='M').start_time + pd.offsets.MonthBegin(0)
     end_2024 = pd.Period('2024-12', freq='M').start_time + pd.offsets.MonthBegin(0)
     jan_2025 = pd.Period('2025-01', freq='M').start_time + pd.offsets.MonthBegin(0)
@@ -143,7 +143,7 @@ def main():
     y_hist = y.loc[start_2024:end_2024]
     y_act = y.loc[jan_2025:aug_2025]
 
-    # Fit ETS on data through Dec 2024, forecast Jan–Aug 2025
+    # Fit ETS on data through Dec 2024, forecast Jan-Aug 2025
     y_train = y.loc[:end_2024]
     ets = ExponentialSmoothing(y_train, trend='add', seasonal='add', seasonal_periods=cfg.season).fit(optimized=True)
     fcast = ets.forecast(len(pd.period_range('2025-01', '2025-08', freq='M')))
@@ -158,7 +158,7 @@ def main():
     ax.plot(y_hist.index, y_hist.values, color='#555555', lw=1.5)
     # Vertical line at Jan 2025
     ax.axvline(jan_2025, color='#777777', linestyle='--', lw=1)
-    # Actuals 2025 Jan–Aug
+    # Actuals 2025 Jan-Aug
     ax.plot(y_act.index, y_act.values, color='#1f77b4', lw=1.8)
     # Forecast in red with band
     ax.fill_between(fcast.index, lower.values, upper.values, color='red', alpha=0.08, linewidth=0)
@@ -175,12 +175,12 @@ def main():
     if len(y_hist):
         ax.annotate('History (2024)', xy=(y_hist.index[-1], y_hist.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#555555')
     if len(y_act):
-        ax.annotate('Actual (Jan–Aug 2025)', xy=(y_act.index[-1], y_act.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#1f77b4')
+        ax.annotate('Actual (Jan-Aug 2025)', xy=(y_act.index[-1], y_act.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#1f77b4')
     ax.annotate('Forecast', xy=(fcast.index[-1], fcast.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='red')
 
-    ax.set_title('EIA Net Generation — ETS forecast from Jan–Aug 2025 (history: 2024)')
+    ax.set_title('EIA Net Generation — ETS forecast from Jan-Aug 2025 (history: 2024)')
     ax.set_xlabel('')
-        save_fig('eia_expsmooth_last_fold.png')
+    save_fig('eia_expsmooth_last_fold.png')
 
 if __name__ == '__main__':
     main()

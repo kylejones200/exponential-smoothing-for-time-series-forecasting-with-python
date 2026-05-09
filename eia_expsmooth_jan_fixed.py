@@ -7,6 +7,12 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 np.random.seed(42)
 plt.rcParams.update(
     {
@@ -31,6 +37,27 @@ class Config:
     horizon: int = 12
     n_splits: int = 5
     season: int = 12
+
+def load_config(config_path=None) -> 'Config':
+    """Build Config from config.yaml, falling back to dataclass defaults."""
+    if config_path is None:
+        config_path = Path(__file__).parent / 'config.yaml'
+    if not config_path.exists():
+        return Config()
+    with open(config_path) as _f:
+        import yaml as _yaml
+        raw = _yaml.safe_load(_f) or {}
+    _d = raw.get('data', {})
+    _m = raw.get('model', {})
+    _o = raw.get('output', {})
+    return Config(
+        csv_path=_d.get('input_file', '2001-2025 Net_generation_United_States_all_sectors_monthly.csv'),
+        freq=_d.get('freq', 'MS'),
+        horizon=_m.get('horizon', 12),
+        n_splits=_d.get('n_splits', 5),
+        season=_m.get('season', 12),
+    )
+
 
 
 def load_series(cfg: Config) -> pd.Series:
@@ -58,17 +85,17 @@ def rolling_origin_ets(y: pd.Series, cfg: Config):
         ).fit(optimized=True)
         f = ets.forecast(len(y_te)).to_numpy()
         m = mean_absolute_error(y_te.values, f)
-        print(f"Fold MAE: {m:.3f}")
+        logger.info(f"Fold MAE: {m:.3f}")
         maes.append(m)
         last_true, last_pred = y_te, pd.Series(f, index=y_te.index)
     return float(np.mean(maes)), last_true, last_pred
 
 
 def main():
-    cfg = Config()
+    cfg = load_config()
     y = load_series(cfg)
     mean_mae, _, _ = rolling_origin_ets(y, cfg)
-    print(f"ETS mean MAE: {mean_mae}")
+    logger.info(f"ETS mean MAE: {mean_mae}")
 
     # Tufte-style figure focused on 2024 history and Jan–Aug 2025 forecast vs actuals
     start_2024 = pd.Period("2024-01", freq="M").start_time + pd.offsets.MonthBegin(0)

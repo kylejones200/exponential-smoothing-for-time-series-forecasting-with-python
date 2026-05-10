@@ -128,7 +128,7 @@ def rolling_origin_ets(y: pd.Series, cfg: Config):
     return float(np.mean(maes)), last_true, last_pred
 
 
-def main():
+def main(plot: bool = False):
     cfg = Config()
     y = load_series(cfg)
     mean_mae, _, _ = rolling_origin_ets(y, cfg)
@@ -153,34 +153,35 @@ def main():
     upper = fcast + 1.96 * sigma
     lower = fcast - 1.96 * sigma
 
-    fig, ax = plt.subplots(figsize=(10,5))
+    if plot:
+        fig, ax = plt.subplots(figsize=(10,5))
     # History 2024
-    ax.plot(y_hist.index, y_hist.values, color='#555555', lw=1.5)
+        ax.plot(y_hist.index, y_hist.values, color='#555555', lw=1.5)
     # Vertical line at Jan 2025
-    ax.axvline(jan_2025, color='#777777', linestyle='--', lw=1)
+        ax.axvline(jan_2025, color='#777777', linestyle='--', lw=1)
     # Actuals 2025 Jan-Aug
-    ax.plot(y_act.index, y_act.values, color='#1f77b4', lw=1.8)
+        ax.plot(y_act.index, y_act.values, color='#1f77b4', lw=1.8)
     # Forecast in red with band
-    ax.fill_between(fcast.index, lower.values, upper.values, color='red', alpha=0.08, linewidth=0)
-    ax.plot(fcast.index, fcast.values, color='red', lw=2.0)
+        ax.fill_between(fcast.index, lower.values, upper.values, color='red', alpha=0.08, linewidth=0)
+        ax.plot(fcast.index, fcast.values, color='red', lw=2.0)
 
     # Minimal y-axis
-    from matplotlib.ticker import MaxNLocator, StrMethodFormatter
-    ax.yaxis.set_major_locator(MaxNLocator(4))
-    ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+        from matplotlib.ticker import MaxNLocator, StrMethodFormatter
+        ax.yaxis.set_major_locator(MaxNLocator(4))
+        ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
 
     # Direct end labels
-    if len(y_hist):
-        ax.annotate('History (2024)', xy=(y_hist.index[-1], y_hist.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#555555')
-    if len(y_act):
-        ax.annotate('Actual (Jan-Aug 2025)', xy=(y_act.index[-1], y_act.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#1f77b4')
-    ax.annotate('Forecast', xy=(fcast.index[-1], fcast.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='red')
+        if len(y_hist):
+            ax.annotate('History (2024)', xy=(y_hist.index[-1], y_hist.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#555555')
+        if len(y_act):
+            ax.annotate('Actual (Jan-Aug 2025)', xy=(y_act.index[-1], y_act.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='#1f77b4')
+        ax.annotate('Forecast', xy=(fcast.index[-1], fcast.values[-1]), xytext=(6,0), textcoords='offset points', fontsize=9, va='center', ha='left', color='red')
 
-    ax.set_title('EIA Net Generation — ETS forecast from Jan-Aug 2025 (history: 2024)')
-    ax.set_xlabel('')
-    save_fig('eia_expsmooth_last_fold.png')
+        ax.set_title('EIA Net Generation — ETS forecast from Jan-Aug 2025 (history: 2024)')
+        ax.set_xlabel('')
+        save_fig('eia_expsmooth_last_fold.png')
 
 if __name__ == '__main__':
     main()

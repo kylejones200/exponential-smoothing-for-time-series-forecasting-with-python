@@ -6,7 +6,7 @@ still considering historical data.
 #### Exponential smoothing gives more weight to recent observations while still considering historical data.
 Exponential smoothing is a simple forecasting technique that gives more weight to recent observations while gradually reducing the influence of older data. This approach makes it particularly effective for capturing trends and patterns in time series data, especially when compared to methods like moving averages.
 
-We've talked about moving averages before. So let's look at **simple exponential smoothing**, **double exponential smoothing**, and **triple exponential smoothing (Holt-Winters).**
+We've talked about moving averages before. So let's look at simple exponential smoothing, double exponential smoothing, and triple exponential smoothing (Holt-Winters).
 
 
 <figcaption>Photo by <a class="markup--anchor markup--figure-anchor" rel="photo-creator noopener" target="_blank">Meggyn Pomerleau</a> on <a class="markup--anchor markup--figure-anchor"
@@ -58,4 +58,4 @@ Holt-Winters smoothing adjusts for both trends and seasonal cycles. It fits this
 
 
 ### So what?
-**Exponential smoothing is simple but useful.** It is easy to understand and can apply in a wide range of time series situations. The choice between simple, double, and triple exponential smoothing depends on the presence of trends and seasonality in your data --- but you can easily try all three. Lots of libraries have exponential smoothing. I prefer `statsmodels.` Update (2025--11--04) I revisited this approach and the code for a new project is below that is better than the previous project.
+Exponential smoothing is simple but useful. It is easy to understand and can apply in a wide range of time series situations. The choice between simple, double, and triple exponential smoothing depends on the presence of trends and seasonality in your data --- but you can easily try all three. Lots of libraries have exponential smoothing. I prefer `statsmodels.` Update (2025--11--04) I revisited this approach and the code for a new project is below that is better than the previous project.

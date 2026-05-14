@@ -9,6 +9,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import TimeSeriesSplit
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+import signalplot
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
@@ -84,11 +85,8 @@ plt.show()
 
 
 np.random.seed(42)
-plt.rcParams.update({
-    'axes.grid': False,'font.family': 'serif','axes.spines.top': False,'axes.spines.right': False,'axes.linewidth': 0.8})
+signalplot.apply(font_family='serif')
 
-def save_fig(path: str):
-    plt.tight_layout(); plt.savefig(path, bbox_inches='tight'); plt.close()
 
 @dataclass
 class Config:
@@ -181,7 +179,7 @@ def main(plot: bool = False):
 
         ax.set_title('EIA Net Generation — ETS forecast from Jan-Aug 2025 (history: 2024)')
         ax.set_xlabel('')
-        save_fig('eia_expsmooth_last_fold.png')
+        signalplot.save('eia_expsmooth_last_fold.png')
 
 if __name__ == '__main__':
     main()

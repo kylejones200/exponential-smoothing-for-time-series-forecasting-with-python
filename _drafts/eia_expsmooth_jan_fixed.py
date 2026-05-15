@@ -1,23 +1,21 @@
-import signalplot
+import logging
+from dataclasses import dataclass
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from pathlib import Path
-from dataclasses import dataclass
-from sklearn.model_selection import TimeSeriesSplit
+import signalplot
 from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import TimeSeriesSplit
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-import logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 np.random.seed(42)
-signalplot.apply(font_family='serif')
-
-
+signalplot.apply(font_family="serif")
 
 
 @dataclass
@@ -28,26 +26,30 @@ class Config:
     n_splits: int = 5
     season: int = 12
 
-def load_config(config_path=None) -> 'Config':
+
+def load_config(config_path=None) -> "Config":
     """Build Config from config.yaml, falling back to dataclass defaults."""
     if config_path is None:
-        config_path = Path(__file__).parent / 'config.yaml'
+        config_path = Path(__file__).parent / "config.yaml"
     if not config_path.exists():
         return Config()
     with open(config_path) as _f:
         import yaml as _yaml
-        raw = _yaml.safe_load(_f) or {}
-    _d = raw.get('data', {})
-    _m = raw.get('model', {})
-    _o = raw.get('output', {})
-    return Config(
-        csv_path=_d.get('input_file', '2001-2025 Net_generation_United_States_all_sectors_monthly.csv'),
-        freq=_d.get('freq', 'MS'),
-        horizon=_m.get('horizon', 12),
-        n_splits=_d.get('n_splits', 5),
-        season=_m.get('season', 12),
-    )
 
+        raw = _yaml.safe_load(_f) or {}
+    _d = raw.get("data", {})
+    _m = raw.get("model", {})
+    _o = raw.get("output", {})
+    return Config(
+        csv_path=_d.get(
+            "input_file",
+            "2001-2025 Net_generation_United_States_all_sectors_monthly.csv",
+        ),
+        freq=_d.get("freq", "MS"),
+        horizon=_m.get("horizon", 12),
+        n_splits=_d.get("n_splits", 5),
+        season=_m.get("season", 12),
+    )
 
 
 def load_series(cfg: Config) -> pd.Series:
@@ -110,19 +112,24 @@ def main(plot: bool = False):
 
     if plot:
         fig, ax = plt.subplots(figsize=(10, 5))
-    # History 2024
+        # History 2024
         ax.plot(y_hist.index, y_hist.values, color="#555555", lw=1.5)
-    # Vertical line at Jan 2025
+        # Vertical line at Jan 2025
         ax.axvline(jan_2025, color="#777777", linestyle="--", lw=1)
-    # Actuals 2025 Jan–Aug
+        # Actuals 2025 Jan–Aug
         ax.plot(y_act.index, y_act.values, color="#1f77b4", lw=1.8)
-    # Forecast in red with band
+        # Forecast in red with band
         ax.fill_between(
-            fcast.index, lower.values, upper.values, color="red", alpha=0.08, linewidth=0
+            fcast.index,
+            lower.values,
+            upper.values,
+            color="red",
+            alpha=0.08,
+            linewidth=0,
         )
         ax.plot(fcast.index, fcast.values, color="red", lw=2.0)
 
-    # Minimal y-axis
+        # Minimal y-axis
         from matplotlib.ticker import MaxNLocator, StrMethodFormatter
 
         ax.yaxis.set_major_locator(MaxNLocator(4))
@@ -130,7 +137,7 @@ def main(plot: bool = False):
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-    # Direct end labels
+        # Direct end labels
         if len(y_hist):
             ax.annotate(
                 "History (2024)",
@@ -164,7 +171,9 @@ def main(plot: bool = False):
             color="red",
         )
 
-        ax.set_title("EIA Net Generation — ETS forecast from Jan–Aug 2025 (history: 2024)")
+        ax.set_title(
+            "EIA Net Generation — ETS forecast from Jan–Aug 2025 (history: 2024)"
+        )
         ax.set_xlabel("")
         ax.grid(False)
         signalplot.save("eia_expsmooth_last_fold.png")

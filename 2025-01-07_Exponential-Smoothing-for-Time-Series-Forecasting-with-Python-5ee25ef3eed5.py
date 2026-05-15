@@ -24,7 +24,6 @@ logging.basicConfig(
 
 
 # Generate synthetic data (constant with slight noise)
-np.random.seed(42)
 time = np.arange(30)
 data = 10 + np.random.normal(scale=0.5, size=len(time))
 
@@ -84,7 +83,6 @@ plt.savefig("Holt_Winters_example.png")
 plt.show()
 
 
-np.random.seed(42)
 signalplot.apply(font_family='serif')
 
 
@@ -127,6 +125,7 @@ def rolling_origin_ets(y: pd.Series, cfg: Config):
 
 
 def main(plot: bool = False):
+    np.random.seed(42)
     cfg = Config()
     y = load_series(cfg)
     mean_mae, _, _ = rolling_origin_ets(y, cfg)

@@ -126,7 +126,7 @@ def rolling_origin_ets(y: pd.Series, cfg: Config):
         f = ets.forecast(len(y_te)).to_numpy()
         m = mean_absolute_error(y_te.values, f)
         logger.info(f"Fold MAE: {m:.3f}")
-        pd.concat([maes, m])
+        maes.append(m)
         last_true, last_pred = y_te, pd.Series(f, index=y_te.index)
     return float(np.mean(maes)), last_true, last_pred
 

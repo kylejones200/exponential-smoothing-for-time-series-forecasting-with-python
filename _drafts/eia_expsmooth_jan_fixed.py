@@ -88,16 +88,13 @@ def main(plot: bool = False):
     y = load_series(cfg)
     mean_mae, _, _ = rolling_origin_ets(y, cfg)
     logger.info(f"ETS mean MAE: {mean_mae}")
-
     # Tufte-style figure focused on 2024 history and Jan–Aug 2025 forecast vs actuals
     start_2024 = pd.Period("2024-01", freq="M").start_time + pd.offsets.MonthBegin(0)
     end_2024 = pd.Period("2024-12", freq="M").start_time + pd.offsets.MonthBegin(0)
     jan_2025 = pd.Period("2025-01", freq="M").start_time + pd.offsets.MonthBegin(0)
     aug_2025 = pd.Period("2025-08", freq="M").start_time + pd.offsets.MonthBegin(0)
-
     y_hist = y.loc[start_2024:end_2024]
     y_act = y.loc[jan_2025:aug_2025]
-
     # Fit ETS on data through Dec 2024, forecast Jan–Aug 2025
     y_train = y.loc[:end_2024]
     ets = ExponentialSmoothing(
@@ -109,7 +106,6 @@ def main(plot: bool = False):
     sigma = float(resid.std(ddof=1)) if resid.std(ddof=1) else 0.0
     upper = fcast + 1.96 * sigma
     lower = fcast - 1.96 * sigma
-
     if plot:
         fig, ax = plt.subplots(figsize=(10, 5))
         # History 2024
@@ -128,7 +124,6 @@ def main(plot: bool = False):
             linewidth=0,
         )
         ax.plot(fcast.index, fcast.values, color="red", lw=2.0)
-
         # Minimal y-axis
         from matplotlib.ticker import MaxNLocator, StrMethodFormatter
 
@@ -136,7 +131,6 @@ def main(plot: bool = False):
         ax.yaxis.set_major_formatter(StrMethodFormatter("{x:,.0f}"))
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
-
         # Direct end labels
         if len(y_hist):
             ax.annotate(
@@ -170,7 +164,6 @@ def main(plot: bool = False):
             ha="left",
             color="red",
         )
-
         ax.set_title(
             "EIA Net Generation — ETS forecast from Jan–Aug 2025 (history: 2024)"
         )

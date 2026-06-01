@@ -11,14 +11,7 @@ We've talked about moving averages before. So let's look at simple exponential s
 
 <figcaption>Photo by <a class="markup--anchor markup--figure-anchor" rel="photo-creator noopener" target="_blank">Meggyn Pomerleau</a> on <a class="markup--anchor markup--figure-anchor"
 
-## About
 
-Place the code for this article in this repository.
-The original article export is saved as `article.md`.
-
-## Files
-
-Add your `.ipynb`, `.py`, `.yaml`, `.js`, `.ts`, or other project files here.
 
 ## Disclaimer
 
